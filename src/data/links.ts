@@ -26,15 +26,7 @@ export const recursos: Recurso[] = [
       'Maior evento nacional da área, reunindo estudantes, pesquisadores e profissionais para compartilhar pesquisas, experiências e tendências.',
     url: 'https://portal.abepro.org.br/enegep/2026/',
   },
-  {
-    initials: 'CF',
-    tag: 'Conselho profissional',
-    name: 'CONFEA',
-    fullName: 'Conselho Federal de Engenharia e Agronomia',
-    description:
-      'Instância federal que regulamenta e fiscaliza o exercício das profissões de engenharia, agronomia e geociências no Brasil.',
-    url: '#',
-  },
+
   {
     initials: 'CA',
     tag: 'Conselho profissional',

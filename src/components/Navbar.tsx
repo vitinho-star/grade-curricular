@@ -9,6 +9,7 @@ const links = [
   { to: '/areas', label: 'Áreas de Atuação' },
   { to: '/mercado', label: 'Mercado de Trabalho' },
   { to: '/links', label: 'Links e Referências' },
+  { to: '/avisos', label: 'Avisos' },
   { to: '/contato', label: 'Contato' },
 ]
 

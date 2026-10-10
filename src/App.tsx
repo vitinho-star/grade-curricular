@@ -13,6 +13,7 @@ import Contato from './pages/Contato'
 import Login from './pages/Login'
 import Cadastro from './pages/Cadastro'
 import NotFound from './pages/NotFound'
+import Avisos from './pages/Avisos'
 
 export default function App() {
   return (
@@ -38,7 +39,8 @@ export default function App() {
           <Route path="/contato" element={<Contato />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
-
+          <Route path="/avisos" element={<Avisos />} />
+          
           <Route element={<ProtectedRoute />}>
             <Route path="/grade" element={<Grade />} />
           </Route>

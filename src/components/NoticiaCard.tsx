@@ -11,6 +11,22 @@ export default function NoticiaCard({ noticia }: { noticia: Noticia }) {
 
   return (
     <article className="flex flex-col rounded-2xl bg-white p-6 shadow-sm ring-1 ring-brand-400/20">
+      {noticia.imagem_url && (
+        <a
+          href={noticia.imagem_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-5 block overflow-hidden rounded-xl bg-surface"
+        >
+          <img
+            src={noticia.imagem_url}
+            alt={`Imagem de divulgação: ${noticia.titulo}`}
+            loading="lazy"
+            className="max-h-80 w-full object-contain"
+          />
+        </a>
+      )}
+
       <div className="flex flex-wrap items-center gap-2">
         <span
           className={`rounded-full px-3 py-1 font-mono text-[11px] ${tipo.badge}`}

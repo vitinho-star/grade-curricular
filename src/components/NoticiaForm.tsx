@@ -1,5 +1,12 @@
-import { useState, type FormEvent } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react'
 import { supabase } from '../lib/supabase'
+import { enviarImagem, removerImagem, validarImagem } from '../lib/imagens'
 import { tiposInfo, type Noticia, type TipoNoticia } from '../data/noticias'
 import { authInputClass, authLabelClass } from '../lib/formStyles'
 
@@ -25,8 +32,45 @@ export default function NoticiaForm({
   const [expiraEm, setExpiraEm] = useState(inicial?.expira_em ?? '')
   const [fixada, setFixada] = useState(inicial?.fixada ?? false)
   const [publicada, setPublicada] = useState(inicial?.publicada ?? false)
+  const [arquivo, setArquivo] = useState<File | null>(null)
+  const [removerAtual, setRemoverAtual] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
+
+  const previewLocal = useMemo(
+    () => (arquivo ? URL.createObjectURL(arquivo) : null),
+    [arquivo],
+  )
+
+  useEffect(() => {
+    return () => {
+      if (previewLocal) URL.revokeObjectURL(previewLocal)
+    }
+  }, [previewLocal])
+
+  const imagemMostrada =
+    previewLocal ?? (removerAtual ? null : (inicial?.imagem_url ?? null))
+
+  function handleArquivo(e: ChangeEvent<HTMLInputElement>) {
+    const escolhido = e.target.files?.[0]
+    if (!escolhido) return
+
+    const problema = validarImagem(escolhido)
+    if (problema) {
+      setErro(problema)
+      e.target.value = ''
+      return
+    }
+
+    setErro(null)
+    setArquivo(escolhido)
+    setRemoverAtual(false)
+  }
+
+  function handleRemoverImagem() {
+    setArquivo(null)
+    setRemoverAtual(true)
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -49,31 +93,48 @@ export default function NoticiaForm({
       return
     }
 
-    const dados = {
-      titulo: titulo.trim(),
-      texto: texto.trim(),
-      tipo,
-      data,
-      link: link.trim() || null,
-      expira_em: expiraEm || null,
-      fixada,
-      publicada,
-    }
-
     setSalvando(true)
+    let novaUrl: string | null = null
 
-    const { error } = inicial
-      ? await supabase.from('noticias').update(dados).eq('id', inicial.id)
-      : await supabase.from('noticias').insert(dados)
+    try {
+      if (arquivo) novaUrl = await enviarImagem(arquivo)
 
-    setSalvando(false)
+      let imagemUrl: string | null = inicial?.imagem_url ?? null
+      if (arquivo) imagemUrl = novaUrl
+      else if (removerAtual) imagemUrl = null
 
-    if (error) {
-      setErro('Não foi possível salvar. Confira sua permissão e tente de novo.')
-      return
+      const dados = {
+        titulo: titulo.trim(),
+        texto: texto.trim(),
+        tipo,
+        data,
+        link: link.trim() || null,
+        expira_em: expiraEm || null,
+        fixada,
+        publicada,
+        imagem_url: imagemUrl,
+      }
+
+      const { error } = inicial
+        ? await supabase.from('noticias').update(dados).eq('id', inicial.id)
+        : await supabase.from('noticias').insert(dados)
+
+      if (error) {
+        await removerImagem(novaUrl)
+        setErro('Não foi possível salvar. Confira sua permissão e tente de novo.')
+        return
+      }
+
+      if (inicial?.imagem_url && inicial.imagem_url !== imagemUrl) {
+        await removerImagem(inicial.imagem_url)
+      }
+
+      onSalvo()
+    } catch {
+      setErro('Não foi possível enviar a imagem. Tente novamente.')
+    } finally {
+      setSalvando(false)
     }
-
-    onSalvo()
   }
 
   return (
@@ -171,6 +232,40 @@ export default function NoticiaForm({
             placeholder="https://..."
             className={authInputClass}
           />
+        </div>
+
+        <div>
+          <label htmlFor="imagem" className={authLabelClass}>
+            Imagem (opcional)
+          </label>
+          <input
+            id="imagem"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleArquivo}
+            className="mt-2 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-400/15 file:px-4 file:py-2 file:font-semibold file:text-brand-700 hover:file:bg-brand-400/25"
+          />
+          <p className="mt-1 text-xs text-slate-500">
+            JPG, PNG ou WebP, até 3 MB. Repita a data e o local no texto do
+            aviso.
+          </p>
+
+          {imagemMostrada && (
+            <div className="mt-3">
+              <img
+                src={imagemMostrada}
+                alt="Prévia da imagem do aviso"
+                className="max-h-56 rounded-xl object-contain ring-1 ring-brand-400/20"
+              />
+              <button
+                type="button"
+                onClick={handleRemoverImagem}
+                className="mt-2 text-sm font-medium text-red-600 hover:underline"
+              >
+                Remover imagem
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-6 text-sm text-slate-700">

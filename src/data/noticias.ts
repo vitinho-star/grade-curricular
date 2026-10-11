@@ -7,6 +7,7 @@ export type Noticia = {
   tipo: TipoNoticia
   data: string
   link: string | null
+  imagem_url: string | null
   fixada: boolean
   publicada: boolean
   expira_em: string | null

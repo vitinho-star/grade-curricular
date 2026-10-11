@@ -6,6 +6,7 @@ import { tiposInfo, type Noticia } from '../data/noticias'
 import { usePapel } from '../hooks/usePapel'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { supabase } from '../lib/supabase'
+import { removerImagem } from '../lib/imagens'
 
 const hoje = () => new Date().toLocaleDateString('sv-SE')
 
@@ -92,7 +93,7 @@ export default function Admin() {
     else setVersao((v) => v + 1)
   }
 
-  async function excluir(noticia: Noticia) {
+    async function excluir(noticia: Noticia) {
     const confirmou = window.confirm(
       `Excluir o aviso "${noticia.titulo}"? Esta ação não pode ser desfeita.`,
     )
@@ -104,8 +105,13 @@ export default function Admin() {
       .delete()
       .eq('id', noticia.id)
 
-    if (error) setErro('Não foi possível excluir o aviso.')
-    else setVersao((v) => v + 1)
+    if (error) {
+      setErro('Não foi possível excluir o aviso.')
+      return
+    }
+
+    await removerImagem(noticia.imagem_url)
+    setVersao((v) => v + 1)
   }
 
   return (
@@ -193,6 +199,15 @@ export default function Admin() {
                   <p className="mt-3 font-semibold text-brand-900">
                     {noticia.titulo}
                   </p>
+
+                                    {noticia.imagem_url && (
+                    <img
+                      src={noticia.imagem_url}
+                      alt=""
+                      loading="lazy"
+                      className="mt-3 h-20 w-auto rounded-lg object-cover ring-1 ring-brand-400/20"
+                    />
+                  )}
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     <button

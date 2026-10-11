@@ -35,10 +35,16 @@ export default function DisciplinaModal({
     (codigo) => disciplinas.find((d) => d.codigo === codigo)?.nome ?? codigo,
   )
 
+  if (disciplina.preRequisitoAtePeriodo) {
+    preRequisitos.push(
+      `Todas as disciplinas do 1º ao ${disciplina.preRequisitoAtePeriodo}º período`,
+    )
+  }
+
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-brand-900/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-60 flex items-center justify-center bg-brand-900/60 p-4 backdrop-blur-sm"
     >
       <div
         role="dialog"
@@ -61,9 +67,11 @@ export default function DisciplinaModal({
             <span className="rounded-md bg-brand-400/15 px-2 py-1 text-brand-700">
               {disciplina.semestre}º Semestre
             </span>
-            <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">
-              {disciplina.horas}h
-            </span>
+            {disciplina.horas > 0 && (
+              <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">
+                {disciplina.horas}h
+              </span>
+            )}
             <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">
               {disciplina.codigo}
             </span>
@@ -82,15 +90,19 @@ export default function DisciplinaModal({
         </div>
 
         <div className="space-y-5 border-t border-brand-400/15 p-6">
-          <div>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-brand-400">
-              Descrição
-            </p>
-            <p className="mt-2 text-sm text-slate-700">{disciplina.descricao}</p>
-          </div>
+          {disciplina.descricao && (
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-widest text-brand-600">
+                Descrição
+              </p>
+              <p className="mt-2 text-sm text-slate-700">
+                {disciplina.descricao}
+              </p>
+            </div>
+          )}
 
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-brand-400">
+            <p className="font-mono text-[11px] uppercase tracking-widest text-brand-600">
               Pré-requisitos
             </p>
             {preRequisitos.length === 0 ? (
@@ -107,7 +119,7 @@ export default function DisciplinaModal({
           </div>
 
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-brand-400">
+            <p className="font-mono text-[11px] uppercase tracking-widest text-brand-600">
               Situação da disciplina
             </p>
             <div className="mt-2 grid grid-cols-3 gap-2">

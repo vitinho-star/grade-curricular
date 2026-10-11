@@ -47,6 +47,8 @@ export default function Grade() {
 
   const doSemestre = disciplinas.filter((d) => d.semestre === semestre)
   const horasSemestre = doSemestre.reduce((soma, d) => soma + d.horas, 0)
+  const horasCompletas =
+  doSemestre.length > 0 && doSemestre.every((d) => d.horas > 0)
   const visiveis = doSemestre.filter(
     (d) => filtro === 'todas' || getStatus(d.codigo) === filtro,
   )
@@ -126,8 +128,9 @@ export default function Grade() {
               {semestre}º Semestre
             </h2>
             <p className="mt-1 font-mono text-xs text-slate-500">
-              {doSemestre.length} disciplinas · {horasSemestre}h
-            </p>
+              {doSemestre.length} disciplinas
+              {horasCompletas && ` · ${horasSemestre}h`}           
+             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">

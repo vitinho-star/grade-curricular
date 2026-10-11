@@ -35,8 +35,8 @@ export default function DisciplinaCard({
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span className="font-mono text-[11px] text-slate-500">
-          {disciplina.codigo} · {disciplina.horas}h
-        </span>
+{disciplina.codigo}
+{disciplina.horas > 0 && ` · ${disciplina.horas}h`}        </span>
         <span className="rounded-md bg-brand-400/15 px-2 py-0.5 font-mono text-[11px] text-brand-700">
           {disciplina.categoria}
         </span>

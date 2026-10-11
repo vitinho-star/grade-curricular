@@ -14,6 +14,9 @@ import Login from './pages/Login'
 import Cadastro from './pages/Cadastro'
 import NotFound from './pages/NotFound'
 import Avisos from './pages/Avisos'
+import EditorRoute from './components/EditorRoute'
+import Admin from './pages/Admin'
+
 
 export default function App() {
   return (
@@ -43,6 +46,10 @@ export default function App() {
           
           <Route element={<ProtectedRoute />}>
             <Route path="/grade" element={<Grade />} />
+          </Route>
+
+          <Route element={<EditorRoute />}>
+            <Route path="/admin" element={<Admin />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

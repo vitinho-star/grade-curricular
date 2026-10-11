@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { usePapel } from '../hooks/usePapel'
 
 const links = [
   { to: '/', label: 'Início' },
   { to: '/sobre', label: 'Sobre o Curso' },
   { to: '/grade', label: 'Grade Curricular' },
   { to: '/areas', label: 'Áreas de Atuação' },
-  { to: '/mercado', label: 'Mercado de Trabalho' },
-  { to: '/links', label: 'Links e Referências' },
+  { to: '/mercado', label: 'Mercado' },
+  { to: '/links', label: 'Links' },
   { to: '/avisos', label: 'Avisos' },
   { to: '/contato', label: 'Contato' },
 ]
@@ -16,7 +17,10 @@ const links = [
 export default function Navbar() {
   const [aberto, setAberto] = useState(false)
   const { user, signOut } = useAuth()
+  const { eEditor } = usePapel()
   const navigate = useNavigate()
+
+  const itens = eEditor ? [...links, { to: '/admin', label: 'Painel' }] : links
 
   async function handleSair() {
     await signOut()
@@ -36,8 +40,8 @@ export default function Navbar() {
         </div>
       </NavLink>
 
-      <div className="hidden items-center gap-2 xl:flex">
-        {links.map((link) => (
+      <div className="hidden items-center gap-1 xl:flex">
+        {itens.map((link) => (
           <NavLink
             key={link.to}
             to={link.to}
@@ -80,7 +84,7 @@ export default function Navbar() {
 
       {aberto && (
         <div className="flex w-full flex-col gap-1 pt-3 xl:hidden">
-          {links.map((link) => (
+          {itens.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
